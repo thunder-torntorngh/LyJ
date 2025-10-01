@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Ti, con Amor 🌻</title>
+    <style>
+        /* ======================================= */
+        /* == ESTILOS CSS - DISEÑO Y ANIMACIONES == */
+        /* ======================================= */
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden; /* Oculta el scroll, las pantallas se superponen */
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .pantalla {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1.5s ease-in-out; /* Transición suave entre pantallas */
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .pantalla.activa {
+            opacity: 1;
+            z-index: 10;
+        }
+
+        /* --- PANTALLA 1: Mensaje Inicial --- */
+        #pantalla1 {
+            /* Color oscurito amarillento tipo cafecito tirando para el amarillo */
+            background-color: #A68B4B; 
+        }
+
+        .mensaje-inicial {
+            color: white;
+            font-size: 2.5em;
+            text-align: center;
+            padding: 20px;
+            max-width: 80%;
+        }
+
+        /* --- PANTALLA 2: Degradado y Flotantes --- */
+        #pantalla2 {
+            /* Degradado de blanco (arriba) a verde césped (abajo) */
+            background: linear-gradient(to bottom, #FFFFFF 0%, #A3C980 100%);
+        }
+
+        #elementos-flotantes {
+            width: 100%;
+            height: 100%;
+            position: absolute; /* Ocupa toda la pantalla */
+        }
+
+        .elemento-flotante {
+            position: absolute;
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: #333;
+            font-weight: bold;
+            font-size: 1.1em;
+            /* Recuadro transparente translúcido amarillo pastel bien bajito */
+            background-color: rgba(255, 255, 192, 0.4); 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: flotar 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes flotar {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+            50% { transform: translateY(-30px) rotate(5deg); opacity: 1; }
+            100% { transform: translateY(0) rotate(-5deg); opacity: 0.8; }
+        }
+
+        /* --- PANTALLA 3: Dividida y Texto --- */
+        #pantalla3 {
+            background-color: #F8F8F8;
+            padding: 5vh 5vw;
+        }
+
+        .contenido-dividido {
+            display: flex;
+            width: 90%;
+            max-width: 1400px;
+            height: 90%;
+            background: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+        }
+
+        .lado {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lado.izquierdo {
+            background-color: #fcfcfc;
+        }
+
+        /* Estilo del Girasol Geométrico (simplificado con CSS) */
+        .girasol-placeholder {
+            font-size: 8em;
+            color: gold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+        }
+
+        .opciones {
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .boton-opcion {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #FFD700; /* Dorado */
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        .boton-opcion:hover {
+            background-color: #FFC700;
+        }
+        .boton-opcion:active {
+            transform: scale(0.98);
+        }
+
+        .caja-texto-escrito {
+            /* Fondo translúcido amarillo pastel bien bajito con relieve */
+            background-color: rgba(255, 255, 192, 0.5); 
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1); 
+            max-height: 90%;
+            overflow-y: auto;
+        }
+
+        #texto-maquina-escribir {
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            color: #333;
+            /* El cursor de la máquina de escribir se manejará en JS/CSS */
+            border-right: .15em solid orange; /* Cursor */
+            animation: blink-caret .75s step-end infinite;
+        }
+        
+        /* Animación del cursor */
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: orange; }
+        }
+        
+        /* Ocultar el cursor una vez que el texto ha terminado de escribirse */
+        .texto-terminado #texto-maquina-escribir {
+            border-right: none;
+        }
+
+        /* --- PANTALLA 4: Modo Recuerdos (Casillas de Fotos) --- */
+        #pantalla4 {
+            /* Mantiene la capa de frases flotando y cambia el fondo a amarillo pastel */
+            background-color: #FFFACD; 
+            overflow: hidden;
+            display: block; /* Para permitir la colocación de elementos flotantes y casillas */
+        }
+
+        #casillas-fotos-contenedor {
+            width: 100%;
+            height: 100%;
+            position: absolute; 
+        }
+
+        .casilla-foto {
+            position: absolute;
+            width: 120px;
+            height: 80px;
+            border: 3px dashed #B8860B; 
+            background-color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #B8860B;
+            font-size: 0.8em;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            overflow: hidden; 
+            min-width: 100px; 
+            min-height: 100px;
+        }
+
+        .foto-ajustada {
+            width: 100%;       /* Ocupa el 100% del ancho de la casilla (randomWidth) */
+            height: 100%;      /* Ocupa el 100% del alto de la casilla (randomHeight) */
+            /* Esta propiedad es CRUCIAL: Mantiene la proporción de la foto y cubre todo el espacio */
+            object-fit: cover; 
+            display: block; 
+        }
+        
+        .btn-volver {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #FF69B4; /* Rosa bonito */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            z-index: 12; 
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+    </style>
+</head>
+<body>
+
+    <audio id="musicaFondo" loop autoplay>
+        <source src="songs/Ed Sheeran - Tenerife Sea (Official Lyric Video).mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="pantalla1" class="pantalla activa">
+        <p class="mensaje-inicial">solo me queda demostrarte por todos los medios posibles, que en verdad te quiero</p>
+    </div>
+
+    <div id="pantalla2" class="pantalla">
+        <div id="elementos-flotantes">
+            </div>
+        <p style="position: absolute; bottom: 20px; color: #333; opacity: 0.7;">(Haz click en cualquier lugar para continuar)</p>
+    </div>
+
+    <div id="pantalla3" class="pantalla">
+        <div class="contenido-dividido">
+            <div class="lado izquierdo">
+                <div class="girasol-placeholder">
+                    🌻
+                </div>
+
+                <div class="opciones">
+                    <button id="opcion-recuerdos" class="boton-opcion">Recuerdos</button>
+                    <button class="boton-opcion" disabled>Otras Cosas Bonitas</button>
+                    <button class="boton-opcion" disabled>Planes Futuros</button>
+                </div>
+            </div>
+
+            <div class="lado derecho" id="caja-texto-contenedor">
+                <div class="caja-texto-escrito">
+                    <p id="texto-maquina-escribir"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pantalla4" class="pantalla">
+        <button id="btn-volver" class="btn-volver">Volver</button>
+        <div id="elementos-flotantes-recuerdos"></div>
+        <div id="casillas-fotos-contenedor">
+            </div>
+    </div>
+
+    <script>
+        // ===================================
+        // == CÓDIGO JAVASCRIPT - INTERACTIVIDAD ==
+        // ===================================
+        
+        const textoLargo = `Han pasado dos semanas desde que arruiné las cosas y he pasado estas dos semanas pensando mucho y te he extrañado mucho. Quiero hacer las cosas bien y por ello dedico mi tiempo a ti, y a hacer cosas para ti; cosas como esta, cosas que entren en mis medios, en mis posibilidades; usar mi creatividad no solo para los juegos y cosas que sean para mí, sino también para darte detalles bonitos, tener paseos bonitos, poder convivir de una mejor manera. Y ya que nos estaremos conociendo nuevamente, quiero usar todo lo que sea para hacer de tus días bonitos recuerdos y bonitas vivencias.
+
+Esto es un detalle más de los muchos que están por venir, y sin importar si es papel o digital, tendrás tus obsequios. No solo porque te quiero, no solo porque te quiero volver a enamorar, no solo para pedirte disculpas y no solo por querer hacerlo, sino porque te mereces cosas bonitas, te mereces detalles con cariño hechos manualmente. Es un detalle bonito que, aunque no sea mucho, lo hago con mucho amor y con mucha paciencia.
+
+Espero que estés bien, comas toda tu comida, bebas toda el agua y te encuentres muy bien de salud. Me voy a terminar de recuperar y hasta eso mejoraré no solo mi forma de ser, sino también los planes que tengamos de hoy y para largo. TKM ❤️, Loviu 💝💕.`;
+
+        const mensajesFlotantes = [
+            'Te Amo', 'Te Quiero Mucho', 'Eres la Mejor', 'Te Adoro', 'Niña Bonita',
+            'Princesa Bella', 'Princesita', 'Mi Todo', 'Mi Mundo', '💖', '💝', '💕', '💘', 
+            '🎁', '🌹', '🌻', '🌼', '💛', '💐'
+        ];
+        
+        // --- Transiciones de Pantalla ---
+        function cambiarPantalla(idActual, idSiguiente) {
+            const actual = document.getElementById(idActual);
+            const siguiente = document.getElementById(idSiguiente);
+
+            // 1. Inicia el fade-out (se remueve la clase activa)
+            actual.classList.remove('activa');
+            actual.style.zIndex = 1; // Baja el z-index de la actual
+
+            // 2. Espera a que termine el fade-out (1.5s definido en CSS)
+            setTimeout(() => {
+                // 3. Muestra la siguiente
+                siguiente.classList.add('activa');
+                siguiente.style.zIndex = 10; // Sube el z-index de la nueva
+
+                if (idSiguiente === 'pantalla2') {
+                    iniciarAnimacionFlotante('elementos-flotantes');
+                }
+                
+                if (idSiguiente === 'pantalla3') {
+                    escribirTexto();
+                    iniciarAnimacionFlotante('elementos-flotantes-recuerdos');
+                }
+
+                if (idSiguiente === 'pantalla4') {
+                    // Re-inicia la animación flotante para PANTALLA 4
+                    iniciarAnimacionFlotante('elementos-flotantes-recuerdos');
+                    generarCasillasFotos();
+                }
+
+            }, 1500); 
+        }
+
+        // --- PANTALLA 2 y 4: Elementos Flotantes ---
+        function iniciarAnimacionFlotante(contenedorId) {
+            const contenedor = document.getElementById(contenedorId);
+            contenedor.innerHTML = ''; 
+            const numElementos = 25;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+
+            for (let i = 0; i < numElementos; i++) {
+                const elemento = document.createElement('div');
+                elemento.classList.add('elemento-flotante');
+                
+                const contenido = mensajesFlotantes[Math.floor(Math.random() * mensajesFlotantes.length)];
+                elemento.innerHTML = contenido;
+
+                // Posición inicial aleatoria
+                elemento.style.left = `${Math.random() * (vw - 150)}px`;
+                elemento.style.top = `${Math.random() * (vh - 100)}px`;
+                
+                // Variación de animación
+                elemento.style.animationDuration = `${10 + Math.random() * 10}s`; 
+                elemento.style.animationDelay = `${Math.random() * -10}s`; 
+
+                contenedor.appendChild(elemento);
+            }
+        }
+
+        // --- PANTALLA 3: Efecto Máquina de Escribir (CORREGIDA PARA TEXTO ORDENADO) ---
+// --- PANTALLA 3: Función de Texto INSTANTÁNEO ---
+function escribirTexto() {
+    const elementoTexto = document.getElementById('texto-maquina-escribir');
+    const contenedor = document.getElementById('caja-texto-contenedor');
+    
+    // 1. Asigna todo el contenido de 'textoLargo' directamente
+    elementoTexto.textContent = textoLargo; 
+    
+    // 2. Agrega la clase para ELIMINAR el cursor parpadeante de la máquina de escribir
+    contenedor.classList.add('texto-terminado'); 
+    
+    // NOTA: Se ha eliminado toda la lógica de setTimeout (tiempo de espera) e iteración (máquina de escribir)
+
+    
+    function escribir() {
+        // CORRECCIÓN: Aquí se usa directamente 'textoLargo' para asegurar que el orden es el correcto
+        if (i < textoLargo.length) { 
+            elementoTexto.textContent += textoLargo.charAt(i);
+            i++;
+            // Velocidad: 50ms por carácter
+            setTimeout(escribir, 50); 
+        }
+    }
+    escribir();
+}
+
+        // --- Nuevas variables: Tus fotos (DEBES EDITAR ESTAS RUTAS) ---
+const fotosRecuerdos = [
+    // ¡REEMPLAZA ESTAS URLs DE EJEMPLO CON TUS FOTOS REALES!
+    'img/IMG-20250218-WA0028.jpg',
+    'img/IMG-20250218-WA0030.jpg',
+    'img/IMG-20250510-WA0117.jpg',
+    'img/IMG-20250510-WA0126.jpg',
+    'img/IMG-20250603-WA0086.jpg',
+    'img/IMG-20250608-WA0126.jpg',
+    'img/IMG-20250708-WA0004.jpg',
+    'img/IMG-20250731-WA0043.jpg',
+    'img/IMG-20250805-WA0004.jpg',
+    'img/IMG-20250815-WA0031.jpg',
+    // Si quieres más de 10 fotos para que se elijan aleatoriamente, añádelas aquí.
+];
+const fotoPlaceholder = 'https://via.placeholder.com/150/CCCCCC/808080?text=Sin+Foto'; 
+
+// --- PANTALLA 4: Casillas Aleatorias de Fotos (ACTUALIZADA Y DISPERSA CON IMÁGENES) ---
+function generarCasillasFotos() {
+    const contenedor = document.getElementById('casillas-fotos-contenedor');
+    contenedor.innerHTML = ''; 
+    const numCasillas = 10; 
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    
+    const posicionesOcupadas = []; 
+    const padding = 50; 
+
+    // Crear una copia mezclada de las fotos para asignarlas aleatoriamente sin repetir
+    const fotosDisponibles = [...fotosRecuerdos];
+    // Función de mezcla (shuffle) simple para desordenar las fotos
+    for (let i = fotosDisponibles.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [fotosDisponibles[i], fotosDisponibles[j]] = [fotosDisponibles[j], fotosDisponibles[i]];
+    }
+
+    for (let i = 0; i < numCasillas; i++) {
+        let x, y, randomWidth, randomHeight, esValida;
+        let intentos = 0;
+        do {
+            // 1. Generar tamaño aleatorio (más grandes para las 10)
+            randomWidth = Math.floor(Math.random() * 100) + 100; // Entre 100px y 200px
+            randomHeight = Math.floor(Math.random() * 100) + 100; // Entre 100px y 200px
+            
+            // 2. Generar posición aleatoria dentro de los límites
+            x = Math.random() * (vw - randomWidth); 
+            y = Math.random() * (vh - randomHeight);  
+
+            esValida = true;
+            
+            // 3. Comprobar si se superpone con casillas anteriores
+            for (const pos of posicionesOcupadas) {
+                if (
+                    x < pos.x + pos.w + padding &&
+                    x + randomWidth + padding > pos.x &&
+                    y < pos.y + pos.h + padding &&
+                    y + randomHeight + padding > pos.y
+                ) {
+                    esValida = false;
+                    break;
+                }
+            }
+            
+            intentos++;
+            if (intentos > 100) break; 
+            
+        } while (!esValida);
+
+        if (esValida) {
+            posicionesOcupadas.push({ x, y, w: randomWidth, h: randomHeight });
+
+            const casilla = document.createElement('div');
+            casilla.classList.add('casilla-foto');
+            // Ya no ponemos texto, sino que añadiremos la imagen.
+            
+            casilla.style.width = `${randomWidth}px`;
+            casilla.style.height = `${randomHeight}px`;
+            casilla.style.left = `${x}px`;
+            casilla.style.top = `${y}px`;
+
+            // Rotación aleatoria
+            const rotacion = Math.random() * 45 - 25; 
+            casilla.style.transform = `rotate(${rotacion}deg)`;
+            
+            // --- CÓDIGO CLAVE PARA LA IMAGEN ---
+            const img = document.createElement('img');
+            // Asigna una foto de la lista, o el placeholder si se acaban
+            img.src = fotosDisponibles.length > 0 ? fotosDisponibles.pop() : fotoPlaceholder;
+            img.alt = `Recuerdo ${i + 1}`;
+            img.classList.add('foto-ajustada'); // Clase CSS para ajuste
+            
+            casilla.appendChild(img);
+            // --- FIN CÓDIGO CLAVE ---
+            
+            contenedor.appendChild(casilla);
+        }
+    }
+}
+
+        // --- Eventos de la Página ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Transición Inicial: PANTALLA 1 a PANTALLA 2
+            setTimeout(() => {
+                cambiarPantalla('pantalla1', 'pantalla2');
+            }, 4000); // Muestra el mensaje inicial por 4 segundos
+
+            // 2. Evento para avanzar de PANTALLA 2 a PANTALLA 3 (al hacer clic)
+            document.getElementById('pantalla2').addEventListener('click', () => {
+                // Solo avanza si la PANTALLA 2 es la activa
+                if (document.getElementById('pantalla2').classList.contains('activa')) {
+                    const audio = document.getElementById('musicaFondo');
+                    if (audio) {
+                        audio.play().catch(error => {
+                            console.log("No se pudo reproducir el audio automáticamente, esperando interacción.");
+                        });
+                    }
+                    cambiarPantalla('pantalla2', 'pantalla3');
+                }
+            });
+
+            // 3. Evento para ir al modo "Recuerdos" (PANTALLA 4)
+            document.getElementById('opcion-recuerdos').addEventListener('click', () => {
+                cambiarPantalla('pantalla3', 'pantalla4'); 
+            });
+
+            // 4. Evento para el botón "Volver"
+            document.getElementById('btn-volver').addEventListener('click', () => {
+                cambiarPantalla('pantalla4', 'pantalla3'); 
+            });
+
+            // Ajustar posición de casillas y flotantes al cambiar el tamaño de la ventana
+            window.addEventListener('resize', () => {
+                if (document.getElementById('pantalla4').classList.contains('activa')) {
+                    generarCasillasFotos();
+                    // Re-inicia la animación flotante para PANTALLA 4 si ya está activa
+                    iniciarAnimacionFlotante('elementos-flotantes-recuerdos'); 
+                }
+            });
+        });
+    </script>
+</body>
+</html>
